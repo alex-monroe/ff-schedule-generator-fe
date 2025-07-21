@@ -21,7 +21,11 @@ export default function Home() {
         return { name: name.trim(), divisionId: Number(div) }
       })
 
-      const res = await fetch('/api/generate_schedule', {
+      const api = process.env.NEXT_PUBLIC_API_URL ||
+                  process.env.API_URL ||
+                  'https://ff-scheduler-466320.uw.r.appspot.com'
+
+      const res = await fetch(`${api}/generate_schedule`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ league: teams, divisions })
