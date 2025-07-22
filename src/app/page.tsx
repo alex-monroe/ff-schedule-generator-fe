@@ -17,6 +17,10 @@ export default function Home() {
   const [schedule, setSchedule] = useState<scheduler.IScheduleResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [options, setOptions] = useState<scheduler.IOptions>({
+    inDivisionPlayTwice: false,
+    outOfDivisionPlayOnce: false
+  })
 
   const addDivision = () => {
     const nextId = divisions.length ? Math.max(...divisions.map(d => Number(d.id))) + 1 : 1
@@ -52,7 +56,7 @@ export default function Home() {
       const res = await fetch('/api/generate-schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ league: teams, divisions })
+        body: JSON.stringify({ league: teams, divisions, options })
       })
 
       if (res.ok) {
@@ -90,6 +94,28 @@ export default function Home() {
         <button className="mt-2 text-blue-600" onClick={addDivision}>
           Add Division
         </button>
+      </div>
+
+      <div className="mb-6">
+        <label className="block font-semibold mb-2">Options</label>
+        <label className="block">
+          <input
+            type="checkbox"
+            className="mr-2"
+            checked={options.inDivisionPlayTwice ?? false}
+            onChange={e => setOptions({ ...options, inDivisionPlayTwice: e.target.checked })}
+          />
+          Play teams in division twice
+        </label>
+        <label className="block mt-2">
+          <input
+            type="checkbox"
+            className="mr-2"
+            checked={options.outOfDivisionPlayOnce ?? false}
+            onChange={e => setOptions({ ...options, outOfDivisionPlayOnce: e.target.checked })}
+          />
+          Play teams out of division once
+        </label>
       </div>
 
       <div className="mb-6">
