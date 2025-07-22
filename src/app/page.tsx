@@ -59,7 +59,8 @@ export default function Home() {
         const data: scheduler.IScheduleResponse = await res.json()
         setSchedule(data)
       } else {
-        setError('Failed to generate schedule')
+        const err = await res.json().catch(() => null)
+        setError(err?.error ?? 'Failed to generate schedule')
       }
     } catch {
       setError('Failed to generate schedule')

@@ -8,12 +8,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'API_URL not configured' }, { status: 500 })
   }
 
-  const res = await fetch(`${api}/generate-schedule`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  })
+  try {
+    const res = await fetch(`${api}/generate-schedule`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
 
-  const data = await res.json()
-  return NextResponse.json(data, { status: res.status })
+    let data: unknown = null
+    try {
+      data = await res.json()
+    } catch {
+      // ignore json parse errors
+    }
+
+    return NextResponse.json(data, { status: res.status })
+  } catch {
+    return NextResponse.json({ error: 'Failed to reach schedule service' }, { status: 500 })
+  }
 }
