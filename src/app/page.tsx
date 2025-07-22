@@ -16,6 +16,7 @@ export default function Home() {
   ])
   const [schedule, setSchedule] = useState<scheduler.IScheduleResponse | null>(null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const addDivision = () => {
     const nextId = divisions.length ? Math.max(...divisions.map(d => Number(d.id))) + 1 : 1
@@ -46,6 +47,7 @@ export default function Home() {
 
   const generate = async () => {
     setLoading(true)
+    setError(null)
     try {
       const res = await fetch('/api/generate-schedule', {
         method: 'POST',
@@ -57,8 +59,10 @@ export default function Home() {
         const data: scheduler.IScheduleResponse = await res.json()
         setSchedule(data)
       } else {
-        console.error('failed to generate schedule')
+        setError('Failed to generate schedule')
       }
+    } catch {
+      setError('Failed to generate schedule')
     } finally {
       setLoading(false)
     }
@@ -125,6 +129,10 @@ export default function Home() {
       >
         {loading ? 'Generating...' : 'Generate Schedule'}
       </button>
+
+      {error && (
+        <p className="text-red-600 mt-4">{error}</p>
+      )}
 
       {schedule && schedule.matchups && (
         <div className="mt-6 space-y-4">
