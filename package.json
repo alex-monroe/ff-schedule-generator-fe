@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "ff-schedule-protos": "^0.1.1",
+    "ff-schedule-protos": "^0.3.1",
     "next": "15.4.2",
     "react": "19.1.0",
     "react-dom": "19.1.0"
