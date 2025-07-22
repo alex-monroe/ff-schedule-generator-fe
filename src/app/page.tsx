@@ -4,23 +4,49 @@ import { useState } from 'react'
 import { scheduler } from 'ff-schedule-protos/dist/scheduler'
 
 export default function Home() {
-  const [divisionsText, setDivisionsText] = useState('1,Division 1\n2,Division 2')
-  const [teamsText, setTeamsText] = useState('Team A,1\nTeam B,1\nTeam C,2\nTeam D,2')
+  const [divisions, setDivisions] = useState<scheduler.IDivision[]>([
+    { id: 1, name: 'Division 1' },
+    { id: 2, name: 'Division 2' }
+  ])
+  const [teams, setTeams] = useState<scheduler.ITeam[]>([
+    { name: 'Team A', divisionId: 1 },
+    { name: 'Team B', divisionId: 1 },
+    { name: 'Team C', divisionId: 2 },
+    { name: 'Team D', divisionId: 2 }
+  ])
   const [schedule, setSchedule] = useState<scheduler.IScheduleResponse | null>(null)
   const [loading, setLoading] = useState(false)
+
+  const addDivision = () => {
+    const nextId = divisions.length ? Math.max(...divisions.map(d => Number(d.id))) + 1 : 1
+    setDivisions([...divisions, { id: nextId, name: '' }])
+  }
+
+  const updateDivisionName = (id: number, name: string) => {
+    setDivisions(divisions.map(d => (d.id === id ? { ...d, name } : d)))
+  }
+
+  const removeDivision = (id: number) => {
+    setDivisions(divisions.filter(d => d.id !== id))
+    setTeams(teams.filter(t => t.divisionId !== id))
+  }
+
+  const addTeam = () => {
+    const firstDiv = divisions[0]?.id ?? 1
+    setTeams([...teams, { name: '', divisionId: firstDiv }])
+  }
+
+  const updateTeam = (index: number, data: Partial<scheduler.ITeam>) => {
+    setTeams(teams.map((t, i) => (i === index ? { ...t, ...data } : t)))
+  }
+
+  const removeTeam = (index: number) => {
+    setTeams(teams.filter((_, i) => i !== index))
+  }
 
   const generate = async () => {
     setLoading(true)
     try {
-      const divisions: scheduler.IDivision[] = divisionsText.split('\n').map(line => {
-        const [id, name] = line.split(',')
-        return { id: Number(id), name: name.trim() }
-      })
-      const teams: scheduler.ITeam[] = teamsText.split('\n').map(line => {
-        const [name, div] = line.split(',')
-        return { name: name.trim(), divisionId: Number(div) }
-      })
-
       const res = await fetch('/api/generate-schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -41,24 +67,57 @@ export default function Home() {
   return (
     <main className="p-8 max-w-xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Fantasy Football Schedule Generator</h1>
-      <div className="mb-4">
-        <label className="block font-semibold mb-1">Divisions (id,name)</label>
-        <textarea
-          className="w-full border p-2"
-          rows={2}
-          value={divisionsText}
-          onChange={e => setDivisionsText(e.target.value)}
-        />
+      <div className="mb-6">
+        <label className="block font-semibold mb-2">Divisions</label>
+        {divisions.map(div => (
+          <div key={div.id} className="flex items-center mb-2">
+            <input
+              className="border p-1 flex-grow"
+              value={div.name ?? ''}
+              placeholder="Division name"
+              onChange={e => updateDivisionName(Number(div.id), e.target.value)}
+            />
+            <button className="ml-2 text-red-600" onClick={() => removeDivision(Number(div.id))}>
+              Remove
+            </button>
+          </div>
+        ))}
+        <button className="mt-2 text-blue-600" onClick={addDivision}>
+          Add Division
+        </button>
       </div>
-      <div className="mb-4">
-        <label className="block font-semibold mb-1">Teams (name,division id)</label>
-        <textarea
-          className="w-full border p-2"
-          rows={4}
-          value={teamsText}
-          onChange={e => setTeamsText(e.target.value)}
-        />
+
+      <div className="mb-6">
+        <label className="block font-semibold mb-2">Teams</label>
+        {teams.map((team, idx) => (
+          <div key={idx} className="flex items-center mb-2">
+            <input
+              className="border p-1 flex-grow"
+              value={team.name ?? ''}
+              placeholder="Team name"
+              onChange={e => updateTeam(idx, { name: e.target.value })}
+            />
+            <select
+              className="border p-1 ml-2"
+              value={Number(team.divisionId)}
+              onChange={e => updateTeam(idx, { divisionId: Number(e.target.value) })}
+            >
+              {divisions.map(div => (
+                <option key={div.id} value={div.id}>
+                  {div.name || `Division ${div.id}`}
+                </option>
+              ))}
+            </select>
+            <button className="ml-2 text-red-600" onClick={() => removeTeam(idx)}>
+              Remove
+            </button>
+          </div>
+        ))}
+        <button className="mt-2 text-blue-600" onClick={addTeam}>
+          Add Team
+        </button>
       </div>
+
       <button
         className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
         onClick={generate}
