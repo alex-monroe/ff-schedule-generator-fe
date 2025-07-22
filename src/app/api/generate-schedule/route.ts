@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'API_URL not configured' }, { status: 500 })
   }
 
-  const res = await fetch(`${api}/generate_schedule`, {
+  const res = await fetch(`${api}/generate-schedule`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
