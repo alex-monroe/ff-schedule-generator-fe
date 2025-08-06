@@ -19,4 +19,4 @@ jobs:
       - run: npm test
         env:
           CI: true
-          PLAYWRIGHT_TEST_BASE_URL: https://ff-schedule-generator-fe.vercel.app
+          PLAYWRIGHT_TEST_BASE_URL: https://www.schedwizard.com
