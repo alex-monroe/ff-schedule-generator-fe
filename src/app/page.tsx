@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { scheduler } from 'ff-schedule-protos/dist/scheduler'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 
+type ScheduleOptions = scheduler.IOptions & { weeks: number }
+
 export default function Home() {
   const [divisions, setDivisions] = useState<scheduler.IDivision[]>([
     { id: 1, name: 'Division 1' },
@@ -24,9 +26,10 @@ export default function Home() {
   const [schedule, setSchedule] = useState<scheduler.IScheduleResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [options, setOptions] = useState<scheduler.IOptions>({
+  const [options, setOptions] = useState<ScheduleOptions>({
     inDivisionPlayTwice: false,
-    outOfDivisionPlayOnce: false
+    outOfDivisionPlayOnce: false,
+    weeks: 13
   })
   const [selectedWeek, setSelectedWeek] = useState(0)
 
@@ -145,6 +148,16 @@ export default function Home() {
 
         <div className="mb-8 space-y-2">
           <label className="block font-semibold">Options</label>
+          <label className="flex items-center">
+            <span className="mr-2">Number of weeks:</span>
+            <input
+              type="number"
+              min={1}
+              className="border rounded px-3 py-2 w-24 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              value={options.weeks}
+              onChange={e => setOptions({ ...options, weeks: Number(e.target.value) })}
+            />
+          </label>
           <label className="flex items-center">
             <input
               type="checkbox"
