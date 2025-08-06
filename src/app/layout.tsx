@@ -14,10 +14,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        <nav className="p-4 space-x-4">
-          <Link href="/">Home</Link>
-          <Link href="/about">About</Link>
+      <body className="antialiased min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 text-gray-900 dark:text-gray-100">
+        <nav className="sticky top-0 z-50 flex justify-center gap-6 py-4 backdrop-blur-md bg-white/70 dark:bg-gray-900/70 border-b border-gray-200/50 dark:border-gray-800/50">
+          <Link
+            href="/"
+            className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+          >
+            Home
+          </Link>
+          <Link
+            href="/about"
+            className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+          >
+            About
+          </Link>
         </nav>
         {children}
       </body>
