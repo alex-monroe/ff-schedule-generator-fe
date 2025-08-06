@@ -80,107 +80,120 @@ export default function Home() {
   }
 
   return (
-    <main className="p-8 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Fantasy Football Schedule Generator</h1>
-      <div className="mb-6">
-        <label className="block font-semibold mb-2">Divisions</label>
-        {divisions.map(div => (
-          <div key={div.id} className="flex items-center mb-2">
-            <input
-              className="border p-1 flex-grow"
-              value={div.name ?? ''}
-              placeholder="Division name"
-              onChange={e => updateDivisionName(Number(div.id), e.target.value)}
-            />
-            <button className="ml-2 text-red-600" onClick={() => removeDivision(Number(div.id))}>
-              Remove
-            </button>
-          </div>
-        ))}
-        <button className="mt-2 text-blue-600" onClick={addDivision}>
-          Add Division
-        </button>
-      </div>
+    <main className="flex min-h-screen items-center justify-center p-6">
+      <div className="w-full max-w-2xl space-y-8 rounded-xl bg-white/70 p-8 shadow-xl backdrop-blur-lg">
+        <h1 className="mb-4 text-center text-3xl font-bold">Fantasy Football Schedule Generator</h1>
 
-      <div className="mb-6">
-        <label className="block font-semibold mb-2">Options</label>
-        <label className="block">
-          <input
-            type="checkbox"
-            className="mr-2"
-            checked={options.inDivisionPlayTwice ?? false}
-            onChange={e => setOptions({ ...options, inDivisionPlayTwice: e.target.checked })}
-          />
-          Play teams in division twice
-        </label>
-        <label className="block mt-2">
-          <input
-            type="checkbox"
-            className="mr-2"
-            checked={options.outOfDivisionPlayOnce ?? false}
-            onChange={e => setOptions({ ...options, outOfDivisionPlayOnce: e.target.checked })}
-          />
-          Play teams out of division once
-        </label>
-      </div>
-
-      <div className="mb-6">
-        <label className="block font-semibold mb-2">Teams</label>
-        {teams.map((team, idx) => (
-          <div key={idx} className="flex items-center mb-2">
-            <input
-              className="border p-1 flex-grow"
-              value={team.name ?? ''}
-              placeholder="Team name"
-              onChange={e => updateTeam(idx, { name: e.target.value })}
-            />
-            <select
-              className="border p-1 ml-2"
-              value={Number(team.divisionId)}
-              onChange={e => updateTeam(idx, { divisionId: Number(e.target.value) })}
-            >
-              {divisions.map(div => (
-                <option key={div.id} value={div.id}>
-                  {div.name || `Division ${div.id}`}
-                </option>
-              ))}
-            </select>
-            <button className="ml-2 text-red-600" onClick={() => removeTeam(idx)}>
-              Remove
-            </button>
-          </div>
-        ))}
-        <button className="mt-2 text-blue-600" onClick={addTeam}>
-          Add Team
-        </button>
-      </div>
-
-      <button
-        className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-        onClick={generate}
-        disabled={loading}
-      >
-        {loading ? 'Generating...' : 'Generate Schedule'}
-      </button>
-
-      {error && (
-        <p className="text-red-600 mt-4">{error}</p>
-      )}
-
-      {schedule && schedule.matchups && (
-        <div className="mt-6 space-y-4">
-          {schedule.matchups.map((week, i) => (
-            <div key={i}>
-              <h2 className="font-semibold">Week {i + 1}</h2>
-              <ul className="list-disc list-inside">
-                {week.matchups?.map((m, j) => (
-                  <li key={j}>{m.team1?.name} vs {m.team2?.name}</li>
-                ))}
-              </ul>
+        <div>
+          <label className="mb-2 block font-semibold">Divisions</label>
+          {divisions.map(div => (
+            <div key={div.id} className="fade-in mb-2 flex items-center gap-2">
+              <input
+                className="flex-grow rounded-md border border-gray-300 p-2 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                value={div.name ?? ''}
+                placeholder="Division name"
+                onChange={e => updateDivisionName(Number(div.id), e.target.value)}
+              />
+              <button
+                className="text-red-600 transition-colors hover:text-red-800"
+                onClick={() => removeDivision(Number(div.id))}
+              >
+                Remove
+              </button>
             </div>
           ))}
+          <button
+            className="mt-2 text-blue-600 transition-colors hover:text-blue-800"
+            onClick={addDivision}
+          >
+            Add Division
+          </button>
         </div>
-      )}
+
+        <div>
+          <label className="mb-2 block font-semibold">Options</label>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              checked={options.inDivisionPlayTwice ?? false}
+              onChange={e => setOptions({ ...options, inDivisionPlayTwice: e.target.checked })}
+            />
+            <span>Play teams in division twice</span>
+          </label>
+          <label className="mt-2 flex items-center space-x-2">
+            <input
+              type="checkbox"
+              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              checked={options.outOfDivisionPlayOnce ?? false}
+              onChange={e => setOptions({ ...options, outOfDivisionPlayOnce: e.target.checked })}
+            />
+            <span>Play teams out of division once</span>
+          </label>
+        </div>
+
+        <div>
+          <label className="mb-2 block font-semibold">Teams</label>
+          {teams.map((team, idx) => (
+            <div key={idx} className="fade-in mb-2 flex items-center gap-2">
+              <input
+                className="flex-grow rounded-md border border-gray-300 p-2 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                value={team.name ?? ''}
+                placeholder="Team name"
+                onChange={e => updateTeam(idx, { name: e.target.value })}
+              />
+              <select
+                className="rounded-md border border-gray-300 p-2 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                value={Number(team.divisionId)}
+                onChange={e => updateTeam(idx, { divisionId: Number(e.target.value) })}
+              >
+                {divisions.map(div => (
+                  <option key={div.id} value={div.id}>
+                    {div.name || `Division ${div.id}`}
+                  </option>
+                ))}
+              </select>
+              <button
+                className="text-red-600 transition-colors hover:text-red-800"
+                onClick={() => removeTeam(idx)}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            className="mt-2 text-blue-600 transition-colors hover:text-blue-800"
+            onClick={addTeam}
+          >
+            Add Team
+          </button>
+        </div>
+
+        <button
+          className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+          onClick={generate}
+          disabled={loading}
+        >
+          {loading ? <span className="animate-pulse">Generating...</span> : 'Generate Schedule'}
+        </button>
+
+        {error && <p className="fade-in text-red-600">{error}</p>}
+
+        {schedule && schedule.matchups && (
+          <div className="space-y-4">
+            {schedule.matchups.map((week, i) => (
+              <div key={i} className="fade-in rounded-lg bg-gray-50 p-4">
+                <h2 className="mb-2 font-semibold">Week {i + 1}</h2>
+                <ul className="list-disc list-inside space-y-1">
+                  {week.matchups?.map((m, j) => (
+                    <li key={j}>{m.team1?.name} vs {m.team2?.name}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </main>
   )
 }
