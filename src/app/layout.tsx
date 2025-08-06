@@ -18,6 +18,14 @@ export default function RootLayout({
         <nav className="p-4 space-x-4">
           <Link href="/">Home</Link>
           <Link href="/about">About</Link>
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLScd9SvvazMQrx-z6Qscp9fYP1GqI8vsX2AbwDsQxR7dWhsYVA/viewform?usp=dialog"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-2 py-1 bg-blue-500 text-white rounded"
+          >
+            Feature Request
+          </a>
         </nav>
         {children}
       </body>
