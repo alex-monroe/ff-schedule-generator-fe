@@ -9,10 +9,16 @@ export default function Home() {
     { id: 2, name: 'Division 2' }
   ])
   const [teams, setTeams] = useState<scheduler.ITeam[]>([
-    { name: 'Team A', divisionId: 1 },
-    { name: 'Team B', divisionId: 1 },
-    { name: 'Team C', divisionId: 2 },
-    { name: 'Team D', divisionId: 2 }
+    { name: 'Team 1', divisionId: 1 },
+    { name: 'Team 2', divisionId: 1 },
+    { name: 'Team 3', divisionId: 1 },
+    { name: 'Team 4', divisionId: 1 },
+    { name: 'Team 5', divisionId: 1 },
+    { name: 'Team 6', divisionId: 2 },
+    { name: 'Team 7', divisionId: 2 },
+    { name: 'Team 8', divisionId: 2 },
+    { name: 'Team 9', divisionId: 2 },
+    { name: 'Team 10', divisionId: 2 }
   ])
   const [schedule, setSchedule] = useState<scheduler.IScheduleResponse | null>(null)
   const [loading, setLoading] = useState(false)
