@@ -86,6 +86,28 @@ export default function Home() {
   const [teamsRef] = useAutoAnimate()
   const [scheduleRef] = useAutoAnimate()
 
+  const downloadCSV = () => {
+    if (!schedule?.matchups) return
+    const rows = [
+      ['Week', 'Team 1', 'Team 2'],
+      ...schedule.matchups.flatMap((week, i) =>
+        week.matchups?.map(m => [i + 1, m.team1?.name ?? '', m.team2?.name ?? '']) ?? []
+      )
+    ]
+
+    const csvContent = rows
+      .map(r => r.map(field => `"${String(field).replace(/"/g, '""')}"`).join(','))
+      .join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'schedule.csv'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-6 flex items-start justify-center">
       <section className="w-full max-w-2xl bg-white/70 dark:bg-gray-900/70 backdrop-blur rounded-xl shadow-lg p-8">
@@ -209,6 +231,12 @@ export default function Home() {
                 </button>
               ))}
             </div>
+            <button
+              onClick={downloadCSV}
+              className="mb-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              Download CSV
+            </button>
             <div className="space-y-2" ref={scheduleRef}>
               {schedule.matchups[selectedWeek]?.matchups?.map((m, j) => (
                 <div
