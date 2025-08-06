@@ -26,7 +26,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const [options, setOptions] = useState<scheduler.IOptions>({
     inDivisionPlayTwice: false,
-    outOfDivisionPlayOnce: false
+    outOfDivisionPlayOnce: false,
+    numWeeks: 13
   })
   const [selectedWeek, setSelectedWeek] = useState(0)
 
@@ -162,6 +163,16 @@ export default function Home() {
               onChange={e => setOptions({ ...options, outOfDivisionPlayOnce: e.target.checked })}
             />
             Play teams out of division once
+          </label>
+          <label className="flex items-center">
+            <span className="mr-2">Number of weeks</span>
+            <input
+              type="number"
+              min={1}
+              className="border rounded px-3 py-2 w-24 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              value={options.numWeeks ?? 13}
+              onChange={e => setOptions({ ...options, numWeeks: Number(e.target.value) })}
+            />
           </label>
         </div>
 
