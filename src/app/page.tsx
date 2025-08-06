@@ -28,6 +28,7 @@ export default function Home() {
     inDivisionPlayTwice: false,
     outOfDivisionPlayOnce: false
   })
+  const [selectedWeek, setSelectedWeek] = useState(0)
 
   const addDivision = () => {
     const nextId = divisions.length ? Math.max(...divisions.map(d => Number(d.id))) + 1 : 1
@@ -69,6 +70,7 @@ export default function Home() {
       if (res.ok) {
         const data: scheduler.IScheduleResponse = await res.json()
         setSchedule(data)
+        setSelectedWeek(0)
       } else {
         const err = await res.json().catch(() => null)
         setError(err?.error ?? 'Failed to generate schedule')
@@ -191,20 +193,34 @@ export default function Home() {
         {error && <p className="text-red-600 mt-4">{error}</p>}
 
         {schedule && schedule.matchups && (
-          <div className="mt-8 space-y-4" ref={scheduleRef}>
-            {schedule.matchups.map((week, i) => (
-              <div
-                key={i}
-                className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800 shadow transition-shadow hover:shadow-md"
-              >
-                <h2 className="font-semibold mb-2">Week {i + 1}</h2>
-                <ul className="list-disc list-inside space-y-1">
-                  {week.matchups?.map((m, j) => (
-                    <li key={j}>{m.team1?.name} vs {m.team2?.name}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          <div className="mt-8">
+            <div className="flex flex-wrap gap-2 mb-4">
+              {schedule.matchups.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSelectedWeek(i)}
+                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                    selectedWeek === i
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  Week {i + 1}
+                </button>
+              ))}
+            </div>
+            <div className="space-y-2" ref={scheduleRef}>
+              {schedule.matchups[selectedWeek]?.matchups?.map((m, j) => (
+                <div
+                  key={j}
+                  className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800 shadow"
+                >
+                  <span>{m.team1?.name}</span>
+                  <span className="text-gray-500">vs</span>
+                  <span>{m.team2?.name}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </section>
