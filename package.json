@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.2",
     "ff-schedule-protos": "^0.3.1",
     "next": "15.4.2",
     "react": "19.1.0",
