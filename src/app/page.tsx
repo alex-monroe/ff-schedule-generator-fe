@@ -110,8 +110,8 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-6 flex items-start justify-center">
-      <section className="w-full max-w-2xl bg-white/70 dark:bg-gray-900/70 backdrop-blur rounded-xl shadow-lg p-8">
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6 flex items-start justify-center">
+      <section className="w-full max-w-2xl bg-white/70 dark:bg-gray-900/70 backdrop-blur rounded-xl shadow-lg p-4 sm:p-8">
         <h1 className="text-3xl font-bold mb-8 text-center">
           Fantasy Football Schedule Generator
         </h1>
@@ -120,15 +120,18 @@ export default function Home() {
           <label className="block font-semibold mb-2">Divisions</label>
           <div className="space-y-2" ref={divisionsRef}>
             {divisions.map(div => (
-              <div key={div.id} className="flex items-center p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+              <div
+                key={div.id}
+                className="flex flex-col sm:flex-row sm:items-center gap-2 p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
                 <input
-                  className="border rounded px-3 py-2 flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  className="border rounded px-3 py-2 w-full sm:flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   value={div.name ?? ''}
                   placeholder="Division name"
                   onChange={e => updateDivisionName(Number(div.id), e.target.value)}
                 />
                 <button
-                  className="ml-2 text-red-500 hover:text-red-700 transition-colors"
+                  className="text-red-500 hover:text-red-700 transition-colors sm:ml-2"
                   onClick={() => removeDivision(Number(div.id))}
                 >
                   Remove
@@ -180,15 +183,18 @@ export default function Home() {
           <label className="block font-semibold mb-2">Teams</label>
           <div className="space-y-2" ref={teamsRef}>
             {teams.map((team, idx) => (
-              <div key={idx} className="flex items-center p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+              <div
+                key={idx}
+                className="flex flex-col sm:flex-row sm:items-center gap-2 p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
                 <input
-                  className="border rounded px-3 py-2 flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  className="border rounded px-3 py-2 w-full sm:flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   value={team.name ?? ''}
                   placeholder="Team name"
                   onChange={e => updateTeam(idx, { name: e.target.value })}
                 />
                 <select
-                  className="border rounded px-3 py-2 ml-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  className="border rounded px-3 py-2 w-full sm:w-auto sm:ml-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   value={Number(team.divisionId)}
                   onChange={e => updateTeam(idx, { divisionId: Number(e.target.value) })}
                 >
@@ -199,7 +205,7 @@ export default function Home() {
                   ))}
                 </select>
                 <button
-                  className="ml-2 text-red-500 hover:text-red-700 transition-colors"
+                  className="text-red-500 hover:text-red-700 transition-colors sm:ml-2"
                   onClick={() => removeTeam(idx)}
                 >
                   Remove
