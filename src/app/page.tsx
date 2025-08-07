@@ -231,44 +231,55 @@ export default function Home() {
 
         {error && <p className="text-red-600 mt-4">{error}</p>}
 
-        {schedule && schedule.matchups && (
-          <div className="mt-8">
-            <div className="flex flex-wrap gap-2 mb-4">
-              {schedule.matchups.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setSelectedWeek(i)}
-                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                    selectedWeek === i
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  Week {i + 1}
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={downloadCSV}
-              className="mb-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              Download CSV
-            </button>
-            <div className="space-y-2" ref={scheduleRef}>
-              {schedule.matchups[selectedWeek]?.matchups?.map((m, j) => (
-                <div
-                  key={j}
-                  className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800 shadow"
-                >
-                  <span>{m.team1?.name}</span>
-                  <span className="text-gray-500">vs</span>
-                  <span>{m.team2?.name}</span>
-                </div>
-              ))}
-            </div>
+      {schedule && schedule.matchups && (
+        <div className="mt-8">
+          <div className="flex flex-wrap gap-2 mb-4">
+            {schedule.matchups.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setSelectedWeek(i)}
+                className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                  selectedWeek === i
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600'
+                }`}
+              >
+                Week {i + 1}
+              </button>
+            ))}
           </div>
-        )}
-      </section>
-    </main>
+          <button
+            onClick={downloadCSV}
+            className="mb-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            Download CSV
+          </button>
+          <div className="space-y-2" ref={scheduleRef}>
+            {schedule.matchups[selectedWeek]?.matchups?.map((m, j) => (
+              <div
+                key={j}
+                className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800 shadow"
+              >
+                <span>{m.team1?.name}</span>
+                <span className="text-gray-500">vs</span>
+                <span>{m.team2?.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+    {loading && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div className="flex flex-col items-center">
+          <div className="relative">
+            <div className="h-16 w-16 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-blue-300 opacity-75 animate-ping"></div>
+          </div>
+          <p className="mt-4 text-white text-lg font-semibold">Generating schedule...</p>
+        </div>
+      </div>
+    )}
+  </main>
   )
 }
