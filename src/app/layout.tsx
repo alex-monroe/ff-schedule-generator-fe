@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <nav className="p-4 space-x-4">
+        <nav className="p-4 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
           <Link href="/">Home</Link>
           <Link href="/about">About</Link>
           <a
