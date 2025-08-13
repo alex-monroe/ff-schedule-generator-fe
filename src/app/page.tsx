@@ -4,17 +4,6 @@ import { useState, useRef, Fragment } from 'react'
 import { scheduler } from 'ff-schedule-protos/dist/scheduler'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  PlusIcon,
-  TrashIcon,
-  ChevronDownIcon,
-  CalendarIcon,
-  UsersIcon,
-  CogIcon,
-  DownloadIcon,
-  ArrowRightIcon,
-  CheckCircleIcon
-} from './icons' // Assuming icons are in a separate file
 
 export default function Home() {
   const [divisions, setDivisions] = useState<scheduler.IDivision[]>([
@@ -153,7 +142,7 @@ export default function Home() {
               </p>
             </motion.div>
 
-            <Card icon={<UsersIcon />} title="Divisions & Teams">
+            <Card icon="👥" title="Divisions & Teams">
               <div className="space-y-6" ref={divisionsRef}>
                 {divisions.map(div => (
                   <div key={div.id}>
@@ -169,7 +158,7 @@ export default function Home() {
                         onClick={() => removeDivision(Number(div.id))}
                         aria-label="Remove division"
                       >
-                        <TrashIcon />
+                        🗑️
                       </button>
                     </div>
                     <div className="ml-4 mt-2 space-y-2 border-l-2 border-gray-200 dark:border-gray-700 pl-4" ref={teamsRef}>
@@ -189,7 +178,7 @@ export default function Home() {
                               onClick={() => removeTeam(originalIndex)}
                               aria-label="Remove team"
                             >
-                              <TrashIcon />
+                              🗑️
                             </button>
                           </div>
                         ))}
@@ -197,7 +186,7 @@ export default function Home() {
                             className="btn-text"
                             onClick={() => addTeam(Number(div.id))}
                           >
-                            <PlusIcon /> Add Team
+                            ➕ Add Team
                           </button>
                     </div>
                   </div>
@@ -207,11 +196,11 @@ export default function Home() {
                 className="btn-secondary mt-4"
                 onClick={addDivision}
               >
-                <PlusIcon /> Add Division
+                ➕ Add Division
               </button>
             </Card>
 
-            <Card icon={<CogIcon />} title="Options">
+            <Card icon="⚙️" title="Options">
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <label className="checkbox-label">
                   <input
@@ -261,7 +250,7 @@ export default function Home() {
                   disabled={loading}
                 >
                   {loading ? 'Generating...' : 'Generate Schedule'}
-                  {!loading && <ArrowRightIcon />}
+                  {!loading && '➡️'}
                 </button>
                 {error && <p className="text-red-500 dark:text-red-400 mt-4 text-sm">{error}</p>}
               </div>
@@ -275,7 +264,7 @@ export default function Home() {
                   exit={{ opacity: 0, y: -20 }}
                   className="space-y-8"
                 >
-                  <Card icon={<CalendarIcon />} title="Schedule">
+                  <Card icon="📅" title="Schedule">
                     <div className="flex flex-wrap gap-2 mb-4">
                       {schedule.matchups.map((_, i) => (
                         <button
@@ -295,7 +284,7 @@ export default function Home() {
                       onClick={downloadCSV}
                       className="btn-secondary w-full"
                     >
-                      <DownloadIcon /> Download CSV
+                      📥 Download CSV
                     </button>
                   </Card>
 
@@ -353,7 +342,7 @@ export default function Home() {
 
 
 interface CardProps {
-  icon: React.ReactNode
+  icon: string
   title: string
   children: React.ReactNode
 }
@@ -365,7 +354,7 @@ const Card: React.FC<CardProps> = ({ icon, title, children }) => (
   >
     <div className="flex items-center gap-3 mb-4">
       <div className="w-8 h-8 flex items-center justify-center bg-blue-100 dark:bg-blue-900/50 rounded-lg text-blue-600 dark:text-blue-400">
-        {icon}
+        <span className="text-lg">{icon}</span>
       </div>
       <h2 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h2>
     </div>
