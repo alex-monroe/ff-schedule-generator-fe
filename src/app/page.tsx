@@ -1,9 +1,32 @@
 'use client'
 
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 import { scheduler } from 'ff-schedule-protos/dist/scheduler'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { motion, AnimatePresence } from 'framer-motion'
+
+interface Team extends scheduler.ITeam {
+  color: string
+}
+
+const TEAM_COLORS = [
+  '#ef4444',
+  '#f97316',
+  '#eab308',
+  '#22c55e',
+  '#3b82f6',
+  '#a855f7',
+  '#ec4899',
+  '#14b8a6',
+  '#f43f5e',
+  '#6366f1',
+  '#84cc16',
+  '#06b6d4',
+  '#d946ef',
+  '#0ea5e9',
+  '#f59e0b',
+  '#8b5cf6'
+]
 
 export default function Home() {
   const initialDivisions: scheduler.IDivision[] = [
@@ -11,15 +34,16 @@ export default function Home() {
     { id: 2, name: 'NFC' }
   ]
   const DEFAULT_TEAMS_PER_DIVISION = 5
-  const initialTeams: scheduler.ITeam[] = initialDivisions.flatMap((div, divIndex) =>
+  const initialTeams: Team[] = initialDivisions.flatMap((div, divIndex) =>
     Array.from({ length: DEFAULT_TEAMS_PER_DIVISION }, (_, i) => ({
       name: `Team ${divIndex * DEFAULT_TEAMS_PER_DIVISION + i + 1}`,
-      divisionId: div.id
+      divisionId: div.id,
+      color: TEAM_COLORS[(divIndex * DEFAULT_TEAMS_PER_DIVISION + i) % TEAM_COLORS.length]
     }))
   )
 
   const [divisions, setDivisions] = useState<scheduler.IDivision[]>(initialDivisions)
-  const [teams, setTeams] = useState<scheduler.ITeam[]>(initialTeams)
+  const [teams, setTeams] = useState<Team[]>(initialTeams)
   const [schedule, setSchedule] = useState<scheduler.IScheduleResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -45,10 +69,13 @@ export default function Home() {
   }
 
   const addTeam = (divisionId: number) => {
-    setTeams([...teams, { name: '', divisionId }])
+    setTeams([
+      ...teams,
+      { name: '', divisionId, color: TEAM_COLORS[teams.length % TEAM_COLORS.length] }
+    ])
   }
 
-  const updateTeam = (index: number, data: Partial<scheduler.ITeam>) => {
+  const updateTeam = (index: number, data: Partial<Team>) => {
     setTeams(teams.map((t, i) => (i === index ? { ...t, ...data } : t)))
   }
 
@@ -61,10 +88,11 @@ export default function Home() {
     setError(null)
     setSchedule(null)
     try {
+      const league = teams.map(({ name, divisionId }) => ({ name, divisionId }))
       const res = await fetch('/api/generate-schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ league: teams, divisions, options })
+        body: JSON.stringify({ league, divisions, options })
       })
 
       if (res.ok) {
@@ -106,6 +134,9 @@ export default function Home() {
     link.click()
     URL.revokeObjectURL(url)
   }
+
+  const getTeamColor = (name: string | null | undefined) =>
+    teams.find(t => t.name === name)?.color ?? '#000'
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -167,6 +198,10 @@ export default function Home() {
                         .filter(({ team }) => team.divisionId === div.id)
                         .map(({ team, originalIndex }) => (
                           <div key={originalIndex} className="flex items-center gap-2">
+                            <span
+                              className="w-3 h-3 rounded-full"
+                              style={{ backgroundColor: team.color }}
+                            />
                             <input
                               className="input flex-grow"
                               value={team.name ?? ''}
@@ -296,9 +331,21 @@ export default function Home() {
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0, transition: { delay: j * 0.05 } }}
                         >
-                          <span className="font-semibold">{m.team1?.name}</span>
+                          <span className="flex items-center gap-2 font-semibold">
+                            <span
+                              className="w-3 h-3 rounded-full"
+                              style={{ backgroundColor: getTeamColor(m.team1?.name) }}
+                            />
+                            {m.team1?.name}
+                          </span>
                           <span className="text-gray-400 dark:text-gray-500 text-sm">vs</span>
-                          <span className="font-semibold">{m.team2?.name}</span>
+                          <span className="flex items-center gap-2 font-semibold">
+                            <span
+                              className="w-3 h-3 rounded-full"
+                              style={{ backgroundColor: getTeamColor(m.team2?.name) }}
+                            />
+                            {m.team2?.name}
+                          </span>
                         </motion.div>
                       ))}
                   </div>
