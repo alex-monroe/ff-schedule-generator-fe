@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, Fragment } from 'react'
+import { useState, Fragment } from 'react'
 import { scheduler } from 'ff-schedule-protos/dist/scheduler'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -15,10 +15,12 @@ export default function Home() {
     { name: 'Team 2', divisionId: 1 },
     { name: 'Team 3', divisionId: 1 },
     { name: 'Team 4', divisionId: 1 },
-    { name: 'Team 5', divisionId: 2 },
+    { name: 'Team 5', divisionId: 1 },
     { name: 'Team 6', divisionId: 2 },
     { name: 'Team 7', divisionId: 2 },
-    { name: 'Team 8', divisionId: 2 }
+    { name: 'Team 8', divisionId: 2 },
+    { name: 'Team 9', divisionId: 2 },
+    { name: 'Team 10', divisionId: 2 }
   ])
   const [schedule, setSchedule] = useState<scheduler.IScheduleResponse | null>(null)
   const [loading, setLoading] = useState(false)
