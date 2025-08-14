@@ -1,32 +1,32 @@
 'use client'
 
-import { useState, useRef, Fragment } from 'react'
+import { useState, Fragment } from 'react'
 import { scheduler } from 'ff-schedule-protos/dist/scheduler'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function Home() {
-  const [divisions, setDivisions] = useState<scheduler.IDivision[]>([
+  const initialDivisions: scheduler.IDivision[] = [
     { id: 1, name: 'AFC' },
     { id: 2, name: 'NFC' }
-  ])
-  const [teams, setTeams] = useState<scheduler.ITeam[]>([
-    { name: 'Team 1', divisionId: 1 },
-    { name: 'Team 2', divisionId: 1 },
-    { name: 'Team 3', divisionId: 1 },
-    { name: 'Team 4', divisionId: 1 },
-    { name: 'Team 5', divisionId: 2 },
-    { name: 'Team 6', divisionId: 2 },
-    { name: 'Team 7', divisionId: 2 },
-    { name: 'Team 8', divisionId: 2 }
-  ])
+  ]
+  const DEFAULT_TEAMS_PER_DIVISION = 5
+  const initialTeams: scheduler.ITeam[] = initialDivisions.flatMap((div, divIndex) =>
+    Array.from({ length: DEFAULT_TEAMS_PER_DIVISION }, (_, i) => ({
+      name: `Team ${divIndex * DEFAULT_TEAMS_PER_DIVISION + i + 1}`,
+      divisionId: div.id
+    }))
+  )
+
+  const [divisions, setDivisions] = useState<scheduler.IDivision[]>(initialDivisions)
+  const [teams, setTeams] = useState<scheduler.ITeam[]>(initialTeams)
   const [schedule, setSchedule] = useState<scheduler.IScheduleResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [options, setOptions] = useState<scheduler.IOptions>({
     inDivisionPlayTwice: true,
     outOfDivisionPlayOnce: true,
-    numWeeks: 14
+    numWeeks: 13
   })
   const [selectedWeek, setSelectedWeek] = useState(0)
 
