@@ -22,14 +22,15 @@ test('allows schedule generation and team/division management', async ({ page })
   await page.getByRole('button', { name: 'Remove division' }).last().click();
   await expect(divisionInputs).toHaveCount(2);
 
-  const teamInputs = page.getByPlaceholder('Team name');
-  await expect(teamInputs).toHaveCount(10);
+  const teamSelects = page.getByRole('combobox', { name: 'Team name' });
+  await expect(teamSelects).toHaveCount(10);
   await page.getByRole('button', { name: 'Add Team' }).first().click();
-  await expect(teamInputs).toHaveCount(11);
-  const newTeam = teamInputs.last();
-  await newTeam.fill('Temp');
+  await expect(teamSelects).toHaveCount(11);
+  const newTeam = teamSelects.last();
+  await newTeam.selectOption('');
+  await expect(newTeam).toHaveValue('');
   await page.getByRole('button', { name: 'Remove team' }).last().click();
-  await expect(teamInputs).toHaveCount(10);
+  await expect(teamSelects).toHaveCount(10);
 
   await page.getByLabel('Play teams in division twice').check();
   await page.getByLabel('Play teams out of division once').check();

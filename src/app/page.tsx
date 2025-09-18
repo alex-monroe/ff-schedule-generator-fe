@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { scheduler } from 'ff-schedule-protos/dist/scheduler'
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -8,6 +8,114 @@ import { motion, AnimatePresence } from 'framer-motion'
 interface Team extends scheduler.ITeam {
   color: string
 }
+
+const STANDINGS_TABLE_SELECTORS = [
+  '#standings-table',
+  '#standings_table',
+  'table.standings-table',
+  'table.standings_table',
+  'table#standings',
+  'table#standingsTable'
+]
+
+const normalizeText = (text: string | null | undefined) =>
+  text?.replace(/\s+/g, ' ').trim() ?? ''
+
+const findTeamColumnIndex = (table: HTMLTableElement) => {
+  const headerRows: HTMLTableRowElement[] = []
+  table.querySelectorAll<HTMLTableRowElement>('thead tr').forEach(row => headerRows.push(row))
+
+  if (!headerRows.length) {
+    table.querySelectorAll<HTMLTableRowElement>('tr').forEach(row => {
+      if (row.querySelector('th')) {
+        headerRows.push(row)
+      }
+    })
+  }
+
+  for (const row of headerRows) {
+    const cells = Array.from(row.cells)
+    for (let i = 0; i < cells.length; i += 1) {
+      const text = normalizeText(cells[i].textContent).toLowerCase()
+      if (text === 'team' || text === 'teams' || text.includes('team ')) {
+        return i
+      }
+    }
+  }
+
+  return -1
+}
+
+const extractStandingsTeamNames = (root: Document) => {
+  const tables = new Set<HTMLTableElement>()
+
+  STANDINGS_TABLE_SELECTORS.forEach(selector => {
+    root.querySelectorAll<HTMLTableElement>(selector).forEach(table => {
+      tables.add(table)
+    })
+  })
+
+  if (!tables.size) {
+    root.querySelectorAll<HTMLTableElement>('table').forEach(table => {
+      const hasStandingsHeader = normalizeText(table.caption?.textContent).toLowerCase().includes('standings')
+      if (hasStandingsHeader) {
+        tables.add(table)
+      }
+    })
+  }
+
+  if (!tables.size) {
+    root.querySelectorAll<HTMLTableElement>('table').forEach(table => tables.add(table))
+  }
+
+  const names: string[] = []
+  const seen = new Set<string>()
+
+  const addName = (raw: string | null | undefined) => {
+    const value = normalizeText(raw)
+    if (!value) return
+    const key = value.toLowerCase()
+    if (seen.has(key)) return
+    seen.add(key)
+    names.push(value)
+  }
+
+  tables.forEach(table => {
+    const teamColumnIndex = findTeamColumnIndex(table)
+    const bodyRows = Array.from(table.querySelectorAll('tbody tr')) as HTMLTableRowElement[]
+    const rows =
+      bodyRows.length > 0
+        ? bodyRows
+        : (Array.from(table.querySelectorAll('tr')) as HTMLTableRowElement[]).filter(
+            row => row.querySelectorAll('td').length > 0
+          )
+
+    rows.forEach(row => {
+      const cells = Array.from(row.cells)
+      if (!cells.length) return
+
+      const cell =
+        teamColumnIndex >= 0 && teamColumnIndex < cells.length
+          ? cells[teamColumnIndex]
+          : cells.length > 1
+            ? cells[1]
+            : cells[0]
+
+      const link = cell.querySelector('a')
+      if (link) {
+        addName(link.textContent)
+        return
+      }
+
+      addName(cell.textContent)
+    })
+  })
+
+  return names
+}
+
+const arraysEqual = (a: string[], b: string[]) =>
+  a.length === b.length && a.every((value, index) => value === b[index])
 
 const TEAM_COLORS = [
   '#ef4444',
@@ -47,12 +155,64 @@ export default function Home() {
   const [schedule, setSchedule] = useState<scheduler.IScheduleResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [standingsTeams, setStandingsTeams] = useState<string[]>([])
   const [options, setOptions] = useState<scheduler.IOptions>({
     inDivisionPlayTwice: true,
     outOfDivisionPlayOnce: true,
     numWeeks: 13
   })
   const [selectedWeek, setSelectedWeek] = useState(0)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    let raf: number | null = null
+
+    const updateTeamsFromStandings = () => {
+      const names = extractStandingsTeamNames(document)
+      setStandingsTeams(prev => (arraysEqual(prev, names) ? prev : names))
+    }
+
+    const scheduleUpdate = () => {
+      if (raf !== null) return
+      raf = window.requestAnimationFrame(() => {
+        raf = null
+        updateTeamsFromStandings()
+      })
+    }
+
+    updateTeamsFromStandings()
+
+    const observer =
+      typeof MutationObserver !== 'undefined' ? new MutationObserver(scheduleUpdate) : null
+    if (observer && document.body) {
+      observer.observe(document.body, { childList: true, subtree: true })
+    }
+
+    return () => {
+      observer?.disconnect()
+      if (raf !== null) window.cancelAnimationFrame(raf)
+    }
+  }, [])
+
+  const availableTeamOptions = useMemo(() => {
+    const options: string[] = []
+    const seen = new Set<string>()
+
+    const add = (raw: string | null | undefined) => {
+      const value = normalizeText(raw)
+      if (!value) return
+      const key = value.toLowerCase()
+      if (seen.has(key)) return
+      seen.add(key)
+      options.push(value)
+    }
+
+    standingsTeams.forEach(add)
+    teams.forEach(team => add(team.name ?? ''))
+
+    return options
+  }, [standingsTeams, teams])
 
   const addDivision = () => {
     const nextId = divisions.length ? Math.max(...divisions.map(d => Number(d.id))) + 1 : 1
@@ -196,33 +356,48 @@ export default function Home() {
                       {teams
                         .map((team, i) => ({ team, originalIndex: i }))
                         .filter(({ team }) => team.divisionId === div.id)
-                        .map(({ team, originalIndex }) => (
-                          <div key={originalIndex} className="flex items-center gap-2">
-                            <span
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: team.color }}
-                            />
-                            <input
-                              className="input flex-grow"
-                              value={team.name ?? ''}
-                              placeholder="Team name"
-                              onChange={e => updateTeam(originalIndex, { name: e.target.value })}
-                            />
-                            <button
-                              className="btn-icon-danger"
-                              onClick={() => removeTeam(originalIndex)}
-                              aria-label="Remove team"
-                            >
-                              🗑️
-                            </button>
-                          </div>
-                        ))}
-                         <button
-                            className="btn-text"
-                            onClick={() => addTeam(Number(div.id))}
-                          >
-                            ➕ Add Team
-                          </button>
+                        .map(({ team, originalIndex }) => {
+                          const currentName = team.name ?? ''
+                          const optionsForTeam =
+                            currentName && !availableTeamOptions.includes(currentName)
+                              ? [currentName, ...availableTeamOptions]
+                              : availableTeamOptions
+
+                          return (
+                            <div key={originalIndex} className="flex items-center gap-2">
+                              <span
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: team.color }}
+                              />
+                              <select
+                                className="input flex-grow"
+                                value={currentName}
+                                onChange={e => updateTeam(originalIndex, { name: e.target.value })}
+                                aria-label="Team name"
+                              >
+                                <option value="">Select team</option>
+                                {optionsForTeam.map(name => (
+                                  <option key={name} value={name}>
+                                    {name}
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                className="btn-icon-danger"
+                                onClick={() => removeTeam(originalIndex)}
+                                aria-label="Remove team"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          )
+                        })}
+                      <button
+                        className="btn-text"
+                        onClick={() => addTeam(Number(div.id))}
+                      >
+                        ➕ Add Team
+                      </button>
                     </div>
                   </div>
                 ))}
