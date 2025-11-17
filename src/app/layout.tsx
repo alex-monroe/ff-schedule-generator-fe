@@ -14,15 +14,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        <nav className="p-4 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
-          <Link href="/">Home</Link>
-          <Link href="/about">About</Link>
+      <body className="antialiased bg-gray-950 text-gray-100">
+        <nav className="p-4 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 bg-gray-950 border-b border-gray-900">
+          <Link href="/" className="text-gray-300 hover:text-white transition-colors">Home</Link>
+          <Link href="/about" className="text-gray-300 hover:text-white transition-colors">About</Link>
           <a
             href="https://docs.google.com/forms/d/e/1FAIpQLScd9SvvazMQrx-z6Qscp9fYP1GqI8vsX2AbwDsQxR7dWhsYVA/viewform?usp=dialog"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block px-2 py-1 bg-blue-500 text-white rounded"
+            className="inline-block px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 transition-colors"
           >
             Feature Request
           </a>
