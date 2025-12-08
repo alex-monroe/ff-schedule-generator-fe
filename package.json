@@ -13,7 +13,7 @@
     "@formkit/auto-animate": "^0.8.2",
     "ff-schedule-protos": "^0.4.1",
     "framer-motion": "^12.23.12",
-    "next": "15.4.2",
+    "next": "^15.4.8",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
@@ -25,7 +25,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.4.2",
+    "eslint-config-next": "^15.4.8",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
