@@ -156,7 +156,7 @@ export default function Home() {
 
   return (
     <>
-      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 p-4 sm:p-6 lg:p-8 font-sans">
+      <main className="min-h-screen bg-gray-950 text-gray-100 p-4 sm:p-6 lg:p-8 font-sans">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
           <motion.div
             className="lg:col-span-2"
@@ -165,10 +165,10 @@ export default function Home() {
             variants={containerVariants}
           >
             <motion.div variants={itemVariants} className="mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-4xl font-bold text-white">
                 Schedule Generator
               </h1>
-              <p className="text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-gray-400 mt-1">
                 Create a fantasy football schedule in seconds.
               </p>
             </motion.div>
@@ -192,7 +192,7 @@ export default function Home() {
                         🗑️
                       </button>
                     </div>
-                    <div className="ml-4 mt-2 space-y-2 border-l-2 border-gray-200 dark:border-gray-700 pl-4" ref={teamsRef}>
+                    <div className="ml-4 mt-2 space-y-2 border-l-2 border-gray-800 pl-4" ref={teamsRef}>
                       {teams
                         .map((team, i) => ({ team, originalIndex: i }))
                         .filter(({ team }) => team.divisionId === div.id)
@@ -275,8 +275,8 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0, transition: { delay: 0.2 } }}
             >
-              <div className="bg-white dark:bg-gray-800/50 rounded-xl shadow-lg p-6 sticky top-8">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              <div className="bg-gray-900/70 border border-gray-800 rounded-xl shadow-xl p-6 sticky top-8">
+                <h2 className="text-2xl font-bold text-white mb-4">
                   Ready to Go?
                 </h2>
                 <button
@@ -287,7 +287,7 @@ export default function Home() {
                   {loading ? 'Generating...' : 'Generate Schedule'}
                   {!loading && '➡️'}
                 </button>
-                {error && <p className="text-red-500 dark:text-red-400 mt-4 text-sm">{error}</p>}
+                {error && <p className="text-red-400 mt-4 text-sm">{error}</p>}
               </div>
             </motion.div>
 
@@ -308,7 +308,7 @@ export default function Home() {
                           className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                             selectedWeek === i
                               ? 'bg-blue-600 text-white'
-                              : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600'
+                              : 'bg-gray-800 hover:bg-gray-700'
                           }`}
                         >
                           Week {i + 1}
@@ -327,7 +327,7 @@ export default function Home() {
                      {schedule.matchups[selectedWeek]?.matchups?.map((m, j) => (
                         <motion.div
                           key={j}
-                          className="flex items-center justify-between p-4 rounded-lg bg-white dark:bg-gray-800/50 shadow"
+                          className="flex items-center justify-between p-4 rounded-lg bg-gray-900/70 border border-gray-800 shadow"
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0, transition: { delay: j * 0.05 } }}
                         >
@@ -338,7 +338,7 @@ export default function Home() {
                             />
                             {m.team1?.name}
                           </span>
-                          <span className="text-gray-400 dark:text-gray-500 text-sm">vs</span>
+                          <span className="text-gray-500 text-sm">vs</span>
                           <span className="flex items-center gap-2 font-semibold">
                             <span
                               className="w-3 h-3 rounded-full"
@@ -369,7 +369,7 @@ export default function Home() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.5, opacity: 0 }}
               transition={{ type: 'spring', damping: 15, stiffness: 200 }}
-              className="flex flex-col items-center space-y-4 bg-white/10 p-8 rounded-2xl"
+              className="flex flex-col items-center space-y-4 bg-gray-900/70 p-8 rounded-2xl border border-gray-800"
             >
               <motion.div
                 animate={{ rotate: 360 }}
@@ -397,13 +397,13 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ icon, title, children }) => (
   <motion.div
     variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
-    className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8"
+    className="bg-gray-900/70 border border-gray-800 rounded-xl shadow-xl p-6 mb-8"
   >
     <div className="flex items-center gap-3 mb-4">
-      <div className="w-8 h-8 flex items-center justify-center bg-blue-100 dark:bg-blue-900/50 rounded-lg text-blue-600 dark:text-blue-400">
+      <div className="w-8 h-8 flex items-center justify-center bg-blue-900/40 rounded-lg text-blue-300">
         <span className="text-lg">{icon}</span>
       </div>
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h2>
+      <h2 className="text-xl font-bold text-white">{title}</h2>
     </div>
     {children}
   </motion.div>
